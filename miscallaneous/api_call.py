@@ -41,6 +41,3 @@ class Caller:
 
         return self.post_processed_response
 
-
-        
-    
