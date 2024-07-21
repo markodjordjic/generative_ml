@@ -1,4 +1,4 @@
-from miscallaneous.api_call import Caller
+from utilities.calling import Caller
 
 class Summarizer:
 
