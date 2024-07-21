@@ -1,14 +1,21 @@
 import sys
-from operations.operations import Summarizer
+from operations.calls import CompletionCaller, ChatCaller
 
 if __name__ == '__main__':
 
-    summarizer = Summarizer(
-        instruction="Translate the text below to Latin:",
-        text_document="translation.txt"
+    # prompt = "What is a healthy breakfast?"
+
+    # caller = CompletionCaller(prompt=prompt, max_tokens=128, frequency_penalty=2)
+    # caller.make_call()
+    # response = caller.get_response()
+    # print(response)
+
+    chat_caller = ChatCaller(
+        prompt='Is it good to eat protein?',
+        max_tokens=128
     )
-    summarizer.make_summary()
-    summary = summarizer.get_summary()
-    print(summary)
-    
+    chat_caller.make_call()
+    response = chat_caller.get_response()
+    print(response)
+
     sys.exit(0)

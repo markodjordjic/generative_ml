@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from utilities.calling import Caller
+from operations.calls import CompletionCaller
 router = APIRouter()
 
 @router.post("/read_request")
@@ -20,7 +20,7 @@ async def read_request(query: str):
         A:    
     '''
 
-    caller = Caller(max_tokens=128, prompt=prompt_template)
+    caller = CompletionCaller(max_tokens=128, prompt=prompt_template)
     caller.make_call()
     response = caller.get_response()
 

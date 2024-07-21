@@ -1,4 +1,4 @@
-from utilities.calling import Caller
+from operations.calls import CompletionCaller
 
 class Summarizer:
 
@@ -18,7 +18,7 @@ class Summarizer:
 
     def _summarize(self):
         prompt = self.instruction + '\n' + self.text
-        self.caller = Caller(prompt=prompt, max_tokens=128)
+        self.caller = CompletionCaller(prompt=prompt, max_tokens=128)
         self.caller.make_call()
         
     def make_summary(self):
