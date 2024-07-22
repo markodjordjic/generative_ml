@@ -1,9 +1,9 @@
 import sys
 from operations.chatbot import ConversationalChatBot
-
+from utilities.general import CostEstimator
 if __name__ == '__main__':
 
-    # prompt = "What is a healthy breakfast?"
+    prompt = "What is a healthy breakfast?"
 
     # caller = CompletionCaller(prompt=prompt, max_tokens=128, frequency_penalty=2)
     # caller.make_call()
@@ -25,5 +25,13 @@ if __name__ == '__main__':
 
     chatbot = ConversationalChatBot(personality='scientific')
     chatbot.start()
+
+    cost_estimator = CostEstimator(
+        model_name='gpt-3.5-turbo', 
+        text=prompt,
+        price_per_one_m_tokens=3.00)
+    cost_estimator.make_estimation()
+    cost_estimate = cost_estimator.get_cost_estimate()
+    print(cost_estimate)
 
     sys.exit(0)
