@@ -1,5 +1,5 @@
 import sys
-from operations.calls import CompletionCaller, ChatCaller
+from operations.chatbot import ChatBot
 
 if __name__ == '__main__':
 
@@ -7,15 +7,23 @@ if __name__ == '__main__':
 
     # caller = CompletionCaller(prompt=prompt, max_tokens=128, frequency_penalty=2)
     # caller.make_call()
-    # response = caller.get_response()
+    # response = caller.get_response()  
     # print(response)
 
-    chat_caller = ChatCaller(
-        prompt='Is it good to eat protein?',
-        max_tokens=128
-    )
-    chat_caller.make_call()
-    response = chat_caller.get_response()
-    print(response)
+    # chat_caller = ChatCaller(
+    #     messages=[
+    #         {
+    #             'role': 'user',
+    #             'content': 'What is the fastest animal on Earth?'
+    #         }
+    #     ],
+    #     max_tokens=128
+    # )
+    # chat_caller.make_call()
+    # response = chat_caller.get_response()
+    # print(response)
+
+    chatbot = ChatBot()
+    chatbot.start()
 
     sys.exit(0)
