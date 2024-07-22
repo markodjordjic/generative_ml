@@ -1,5 +1,5 @@
 import sys
-from operations.chatbot import ChatBot
+from operations.chatbot import ConversationalChatBot
 
 if __name__ == '__main__':
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # response = chat_caller.get_response()
     # print(response)
 
-    chatbot = ChatBot()
+    chatbot = ConversationalChatBot(personality='scientific')
     chatbot.start()
 
     sys.exit(0)

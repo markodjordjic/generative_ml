@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from utilities.calls import ChatCaller
+from operations.calls import ChatCaller
 
 router = APIRouter()
 

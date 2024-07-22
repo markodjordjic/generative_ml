@@ -44,6 +44,7 @@ class CompletionCaller:
 
         return self.post_processed_response
 
+
 class ChatCaller:
 
     openai.api_key = environment['OPEN_API_KEY']
