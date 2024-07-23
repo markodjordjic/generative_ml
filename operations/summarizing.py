@@ -1,4 +1,4 @@
-from operations.calls import CompletionCaller
+from operations.calling import CompletionCaller
 
 class Summarizer:
 

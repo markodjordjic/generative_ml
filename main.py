@@ -1,6 +1,8 @@
 import sys
-from operations.chatbot import ConversationalChatBot
-from utilities.general import CostEstimator
+from operations.conversing import ConversationalChatBot
+from utilities.cost_estimating import CostEstimator
+
+
 if __name__ == '__main__':
 
     prompt = "What is a healthy breakfast?"

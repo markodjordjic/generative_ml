@@ -1,17 +1,15 @@
-from pathlib import Path
-from dotenv import dotenv_values
+from utilities.general import environment_reader
 import openai
 
-env_file = Path(r'./.env')
-environment = dotenv_values(env_file)
+environment = environment_reader(env_file='./.env')
 
 class CompletionCaller:
 
     openai.api_key = environment['OPEN_API_KEY']
  
     def __init__(self,
-                 model: str = 'gpt-3.5-turbo-instruct',
-                 max_tokens: int = 32,
+                 model: str = 'gpt-',
+                 max_tokens: int = 1024,
                  prompt: str = None,
                  **kwargs):
         self.model = model
@@ -79,6 +77,8 @@ class ChatCaller:
             messages=self.messages,
             **self.kwargs
         ).to_dict()
+
+
 
     def get_response(self):
 

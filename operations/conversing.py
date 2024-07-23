@@ -1,5 +1,5 @@
 from utilities.general import to_single_line
-from operations.calls import ChatCaller
+from operations.calling import ChatCaller
 
 class GenericChatBot:
 
@@ -11,25 +11,28 @@ class GenericChatBot:
 
     def _initiate_personality(self):
 
-        assert self.personality is not None, 'No personality.'
+        if self.personality is not None:
+            raw_system_content = '''
+                You are a chatbot.
+                Your personality is: %s 
+            ''' % (self.personality)
 
-        raw_system_content = '''
-            You are a chatbot.
-            Your personality is: %s 
-        ''' % (self.personality)
-
-        system_content = to_single_line(raw_system_content)
-
-        if self.personality:
+            system_content = to_single_line(raw_system_content)
             self.history.extend([{
                 'role': 'system',
                 'content': system_content
             }])
 
+    def get_history(self):
+
+        return self.history
+            
+
 class ConversationalChatBot(GenericChatBot):
 
     def __init__(self, personality: str = None):
         super().__init__(personality=personality)
+        self._initiate_personality()
     
     def _start_conversation(self):
         while True:
