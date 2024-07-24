@@ -3,6 +3,7 @@ import re
 from utilities.general import to_single_line
 from operations.conversing import GenericChatBot
 
+
 class ProposalManager:
 
     accepted_proposals = []
@@ -56,21 +57,41 @@ class ProposalManager:
             string_to_find, string_to_replace
         )
     
-    def _apply_changes(self):
+    def apply_changes(self) -> None:
         for accepted_proposal in self.accepted_proposals:
             self._apply_change(accepted_proposal=accepted_proposal)
 
-    def _write_reviewed_file(self):
+    def write_file(self) -> None:
         with open(self.file_name, 'w') as file:
             file.writelines(
                 self.reviewed_file
             )
+
             
 class CodeReviewChatBot(GenericChatBot):
+    
     with open('directive.txt', 'r') as file:
         system_directive = file.read()
 
-    accepted_proposals = [] 
+    proposal_manager = ProposalManager()
+
+    def __init__(self, 
+                 personality: str = 'helpful', 
+                 program_text : str = None, 
+                 output_file_name: str = None):
+        super().__init__(personality=personality)
+        self.proposal_manager.original_file = program_text
+        self.proposal_manager.reviewed_file = output_file_name
+        self._initiate_personality()
+        self._initiate_history()
+        self._add_examples()
+        self._add_program_text()
+
+    def _initiate_history(self):
+        self.history = [{
+            'role': 'system',
+            'content': self.system_directive,
+        }]
 
     def _add_examples(self):
         messages = [
@@ -242,20 +263,9 @@ I've added some type annotations to your code. They're not required, but they ca
         self.history.extend([
             {
                 'role': 'user',
-                'content': f'Review the following program: {self.program_text}'
+                'content': f'Review the following program: {self.proposal_manager.original_file}'
             }
         ])
-
-    def __init__(self, personality, program_text : str = None):
-        super().__init__(personality=personality)
-        self._initiate_personality()
-        self.history = [{
-            'role': 'system',
-            'content': self.system_directive,
-        }]
-        self.program_text = program_text
-        self._add_examples()
-        self._add_program_text()
 
     def start_review(self):
         while True:
@@ -273,7 +283,7 @@ I've added some type annotations to your code. They're not required, but they ca
                         'role': 'user',
                         'content': f'This proposal is accepted: {response}'
                     }
-                    self.accepted_proposals.extend([response])
+                    self.proposal_manager.accepted_proposals.extend([response])
                 elif user_input.upper() == 'N':
                     user_response = {
                         'role': 'user',
@@ -285,16 +295,10 @@ I've added some type annotations to your code. They're not required, but they ca
                         'content': user_input
                     }
                 self.history.extend([user_response])
+          
             except KeyboardInterrupt:
                 print('Service terminated.')
-                accepted_proposal = self.accepted_proposals[0]
-                find_position = re.search('<find:>', accepted_proposal)
-                replace_position = re.search('<replace:>', accepted_proposal)
-                message_position = re.search('<message:>', accepted_proposal)
-                string_to_find = accepted_proposal[find_position.end():replace_position.start()]
-                string_to_replace = accepted_proposal[replace_position.end():message_position.start()]
-                reviewed_program = self.program_text.replace(string_to_find, string_to_replace)
-                with open('reviewed_program.py', 'w') as file:
-                    file.writelines(reviewed_program)
+                self.proposal_manager.apply_changes()
+                self.proposal_manager.write_file()
                 
                 break
