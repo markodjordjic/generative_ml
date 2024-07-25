@@ -1,6 +1,5 @@
 from copy import deepcopy
 import re
-from utilities.general import to_single_line
 from operations.conversing import GenericChatBot
 
 
@@ -53,7 +52,7 @@ class ProposalManager:
         string_to_find, string_to_replace = self._extract_strings(
             accepted_proposal
         )      
-        self.reviewed_file = self.original_file.replace(
+        self.reviewed_file = self.reviewed_file.replace(
             string_to_find, string_to_replace
         )
     
@@ -66,27 +65,33 @@ class ProposalManager:
             file.writelines(
                 self.reviewed_file
             )
-
             
 class CodeReviewChatBot(GenericChatBot):
     
     with open('directive.txt', 'r') as file:
         system_directive = file.read()
 
-    proposal_manager = ProposalManager()
+    proposal_manager = None
 
     def __init__(self, 
                  personality: str = 'helpful', 
                  program_text : str = None, 
                  output_file_name: str = None):
         super().__init__(personality=personality)
-        self.proposal_manager.original_file = program_text
-        self.proposal_manager.reviewed_file = output_file_name
+        self.program_text = program_text
+        self.output_file_name = output_file_name
+        self._initialise_proposal_manager()
         self._initiate_personality()
         self._initiate_history()
         self._add_examples()
         self._add_program_text()
 
+    def _initialise_proposal_manager(self):
+        self.proposal_manager = ProposalManager(
+            file_name=self.output_file_name,
+            original_file=self.program_text
+        )
+ 
     def _initiate_history(self):
         self.history = [{
             'role': 'system',
@@ -263,7 +268,7 @@ I've added some type annotations to your code. They're not required, but they ca
         self.history.extend([
             {
                 'role': 'user',
-                'content': f'Review the following program: {self.proposal_manager.original_file}'
+                'content': f'Review the following program: {self.proposal_manager.reviewed_file}'
             }
         ])
 
@@ -277,7 +282,7 @@ I've added some type annotations to your code. They're not required, but they ca
                     'content': response
                 }])
                 print(f"{self.personality:}, {response}")
-                user_input = input("Do you accept this change (Y/N): ")
+                user_input = input("Accept (Y) reject (N) or ask further questions: ")
                 if user_input.upper() == 'Y':
                     user_response = {
                         'role': 'user',
