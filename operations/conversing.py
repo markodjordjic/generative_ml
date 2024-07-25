@@ -4,7 +4,7 @@ from operations.calling import ChatCaller
 class GenericChatBot:
 
     history = []
-    chatbot = ChatCaller()
+    chatbot = ChatCaller(max_tokens=4096, temperature=0)
 
     def __init__(self, personality: 'str' = None):
         self.personality = personality
@@ -12,14 +12,13 @@ class GenericChatBot:
     def _initiate_personality(self):
 
         if self.personality is not None:
-            raw_system_content = '''
-                You are a chatbot.
-                Your personality is: %s 
-            ''' % (self.personality)
+            raw_system_content = f"""
+                You are a chatbot. Your personality is: {self.personality} 
+            """
 
             system_content = to_single_line(raw_system_content)
             self.history.extend([{
-                'role': 'system',
+                'role': 'assistant',
                 'content': system_content
             }])
 

@@ -1,14 +1,16 @@
 from utilities.general import environment_reader
 import openai
 
+
 environment = environment_reader(env_file='./.env')
+
 
 class CompletionCaller:
 
     openai.api_key = environment['OPEN_API_KEY']
  
     def __init__(self,
-                 model: str = 'gpt-',
+                 model: str = 'gpt-3.5-turbo',
                  max_tokens: int = 1024,
                  prompt: str = None,
                  **kwargs):
@@ -48,7 +50,7 @@ class ChatCaller:
     openai.api_key = environment['OPEN_API_KEY']
 
     def __init__(self,
-                 model: str = 'gpt-3.5-turbo',
+                 model: str = 'gpt-4',
                  max_tokens: int = 32,
                  **kwargs):
         self.model = model
@@ -70,19 +72,21 @@ class ChatCaller:
         self.messages = messages
 
         assert self.messages is not None, 'No prompt.'
+
+        try:
       
-        self.raw_response = openai.chat.completions.create(
-            model=self.model,
-            max_tokens=self.max_tokens,
-            messages=self.messages,
-            **self.kwargs
-        ).to_dict()
+            self.raw_response = openai.chat.completions.create(
+                model=self.model,
+                max_tokens=self.max_tokens,
+                messages=self.messages,
+                **self.kwargs
+            ).to_dict()
 
-
+            self._extract_response()
+        
+        except openai.BadRequestError as e:
+            pass
 
     def get_response(self):
 
-        self._extract_response()
-
         return self.post_processed_response
-
