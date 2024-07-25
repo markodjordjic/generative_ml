@@ -4,7 +4,7 @@ from operations.calling import ChatCaller
 class GenericChatBot:
 
     history = []
-    chatbot = ChatCaller(max_tokens=4096)
+    chatbot = ChatCaller(max_tokens=4096, temperature=0)
 
     def __init__(self, personality: 'str' = None):
         self.personality = personality

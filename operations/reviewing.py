@@ -59,6 +59,7 @@ class ProposalManager:
     def apply_changes(self) -> None:
         for accepted_proposal in self.accepted_proposals:
             self._apply_change(accepted_proposal=accepted_proposal)
+        
 
     def write_file(self) -> None:
         with open(self.file_name, 'w') as file:
