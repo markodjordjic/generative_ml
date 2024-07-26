@@ -65,7 +65,7 @@ class PlayListGenerator(GenericChatBot):
                     'content': response
                 }])
                 print(f"{self.personality:}, {response}")
-                user_input = input("Accept (Y) reject (N): ")
+                user_input = input("Accept (Y) or reject (N): ")
                 if user_input.upper() == 'Y':
                     user_response = {
                         'role': 'user',
@@ -76,7 +76,7 @@ class PlayListGenerator(GenericChatBot):
                     break
                 if user_input.upper() == 'N':
                     additional_input = input(
-                        '\tProvide suggestion what can be corrected? '
+                        '>> Provide suggestion what can be corrected? '
                     )
                     user_response = {
                         'role': 'user',
