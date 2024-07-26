@@ -32,7 +32,10 @@ class ProposalManager:
             accepted_proposal[find_position.end():replace_position.start()]
         string_to_replace = \
             accepted_proposal[replace_position.end():message_position.start()]
-
+        
+        with open('proposal.txt', 'w') as file:
+            file.writelines(accepted_proposal)
+        
         return string_to_find, string_to_replace
 
     def _extract_strings(self, accepted_proposal: str):
@@ -49,9 +52,31 @@ class ProposalManager:
         return string_to_find, string_to_replace
     
     def _apply_change(self, accepted_proposal: str = None) -> None:
-        string_to_find, string_to_replace = self._extract_strings(
-            accepted_proposal
-        )      
+        # Count the number of issues.
+        find_blocks = []
+        replace_blocks = []
+        for item in re.finditer('<find:>', accepted_proposal):
+            find_blocks.append(item.span())
+        for item in re.finditer('<replace:>', accepted_proposal):
+            replace_blocks.append(item.span())
+
+        assert len(find_blocks) == len(replace_blocks), 'Unequal number of find/replace blocks'
+
+        for index, find_replace in enumerate(zip(find_blocks, replace_blocks)):
+            if len(find_blocks) > 1:
+                find_start = find_replace[0][1]
+                find_end = find_replace[1][0]
+                replace_start = find_replace[1][1]
+                replace_end = find_blocks[index+1][0]
+            if len(find_blocks) == 1:
+                find_start = find_replace[0][1]
+                find_end = find_replace[1][0]
+                replace_start = find_replace[1][1]
+                replace_end = len(accepted_proposal)
+
+        string_to_find = accepted_proposal[find_start:find_end]
+        string_to_replace = accepted_proposal[replace_start:replace_end]
+
         self.reviewed_file = self.reviewed_file.replace(
             string_to_find, string_to_replace
         )
@@ -59,7 +84,6 @@ class ProposalManager:
     def apply_changes(self) -> None:
         for accepted_proposal in self.accepted_proposals:
             self._apply_change(accepted_proposal=accepted_proposal)
-        
 
     def write_file(self) -> None:
         with open(self.file_name, 'w') as file:
@@ -84,7 +108,7 @@ class CodeReviewChatBot(GenericChatBot):
         self._initialise_proposal_manager()
         self._initiate_personality()
         self._initiate_history()
-        self._add_examples()
+        #self._add_examples()
         self._add_program_text()
 
     def _initialise_proposal_manager(self):
