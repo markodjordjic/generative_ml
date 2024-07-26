@@ -1,3 +1,5 @@
+from pathlib import Path
+import json
 from utilities.general import to_single_line
 from operations.calling import ChatCaller
 
@@ -25,7 +27,24 @@ class GenericChatBot:
     def get_history(self):
 
         return self.history
-            
+
+    def write_history(self, path: str = None) -> None:
+        """Write the chat history to disk
+
+        Parameters
+        ----------
+        path : str, optional
+            Path towards the JSON file, by default None
+
+        """
+
+        assert path is not None, 'No path provided.'
+
+        history_json = Path(path)
+
+        with open(history_json, 'w') as file:
+            json.dump(self.history, file, indent=4)
+
 
 class ConversationalChatBot(GenericChatBot):
 

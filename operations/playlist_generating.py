@@ -29,6 +29,7 @@ class PlayListGenerator(GenericChatBot):
         self.mode = mode
         self.count = count
         self.description = description
+        self._initiate_personality()
         self._add_system_directive()
         self._add_prompt()
 
@@ -65,24 +66,34 @@ class PlayListGenerator(GenericChatBot):
                     'content': response
                 }])
                 print(f"{self.personality:}, {response}")
-                user_input = input("Accept (Y) or reject (N): ")
+                user_input = input("Accept (Y), reject (N), or finish (F): ")
                 if user_input.upper() == 'Y':
+                    additional_input = input(
+                        '>> Provide further suggestions: '
+                    )
                     user_response = {
                         'role': 'user',
-                        'content': f'This proposal is accepted: {response}'
+                        'content': f'This proposal is accepted: {response}. Also: make following changes: {additional_input}.'
                     }
                     self.history.extend([user_response])
-                    print('List generated.')
-                    break
+
                 if user_input.upper() == 'N':
                     additional_input = input(
                         '>> Provide suggestion what can be corrected? '
                     )
                     user_response = {
                         'role': 'user',
-                        'content': f'This proposal is rejected: {response}. Try to adjust it according to {additional_input}.'
+                        'content': f'This proposal is rejected: {response}. Adjust your next proposal according to: {additional_input}.'
                     }
-                self.history.extend([user_response])
+                    self.history.extend([user_response])
+
+                if user_input.upper() == 'F':
+                    user_response = {
+                        'role': 'user',
+                        'content': f'This is final playlist {response}'
+                    }
+                    self.history.extend([user_response])
+                    break
 
             except KeyboardInterrupt:
                 print('Service terminated.')
@@ -104,12 +115,12 @@ class PlayListGenerator(GenericChatBot):
         if self.mode == 'interactive':
             for message in self.history:
                 if message['role'] == 'user':
-                    if 'accepted' in message['content']:
+                    if 'final' in message['content']:
                         content = message['content']
                         clean = content.replace(
-                            'This proposal is accepted: ', ""
+                            'This is final playlist ', ""
                         )
-                        playlist = json.loads(clean)
+            playlist = json.loads(clean)
 
         assert len(playlist) > 0, 'Error when parsing content.'
 
