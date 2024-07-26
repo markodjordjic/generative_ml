@@ -51,6 +51,8 @@ class PlayListMaker:
         return tracks
     
     def make_playlist(self):
+        self._authenticate()
+        self._get_current_user()
         tracks = self._get_tracks()
         created_playlist = self.spotify_authentication.user_playlist_create(
             self.current_user['id'],
