@@ -9,16 +9,19 @@ class PlayListMaker:
     spotify_client_id = environment['SPOTIFY_CLIENT_ID']
     spotify_client_secret = environment['SPOTIFY_CLIENT_SECRET']
 
-    def __init__(self, playlist: list[str] = None) -> None:
+    def __init__(self, 
+                 playlist: list[str] = None, 
+                 playlist_name: str = None) -> None:
         self.playlist = playlist
+        self.playlist_name = playlist_name
         self.current_user = None
         self.authentication_manager = None
         self.spotify_authentication = None
 
     def _authenticate(self):
         self.authentication_manager = spotipy.SpotifyOAuth(
-            client_id=,
-            client_secret=,
+            client_id=self.spotify_client_id,
+            client_secret=self.spotify_client_secret,
             redirect_uri='http://localhost:9999',
             scope="playlist-modify-private"
         )
@@ -47,7 +50,7 @@ class PlayListMaker:
 
         return tracks
     
-    def _make_play_list(self):
+    def make_playlist(self):
         tracks = self._get_tracks()
         created_playlist = self.spotify_authentication.user_playlist_create(
             self.current_user['id'],
