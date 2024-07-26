@@ -50,7 +50,7 @@ class ChatCaller:
     openai.api_key = environment['OPEN_API_KEY']
 
     def __init__(self,
-                 model: str = 'gpt-4',
+                 model: str = 'gpt-3.5-turbo',
                  max_tokens: int = 32,
                  **kwargs):
         self.model = model
