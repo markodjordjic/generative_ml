@@ -34,18 +34,56 @@ class LatentFeatureAnalysis:
 
 class SimilarityMeasurement:
 
-    def __init__(self, data: np.array = None, method: str = 'euclidean') -> None:
+    def __init__(self, 
+                 data: np.array = None, 
+                 method: str = 'euclidean',
+                 reference_index: int = 0,
+                 top_k: int = 5) -> None:
         self.data = data
         self.method = method
-        self.distances = None
+        self.reference_index = reference_index
+        self.top_k = top_k
+        self._distances = None
+        self._relevant_distances = None
+        self._k = None
 
-    def _remove_zeros(self):
-        zero_mask = self.distances == 0.0
-        self.distances[zero_mask] = np.nan
-
-    def _compute_distances(self):
+    def _compute_distances(self) -> None:
         if self.method == 'euclidean':
-            self.distances = euclidean_distances(self.data)
+            self._distances = euclidean_distances(self.data)
+
+    def _remove_zeros(self) -> None:
+
+        assert self._distances is not None, 'Distance not computed.'
+
+        mask = self._distances == 0.0
+        self._distances[mask] = np.nan
+
+    def _select_relevant_distances(self):
+        self._relevant_distances = self._distances[self.reference_index, :]
+
+    def _top_k(self):
+        k = []
+        for _ in range(0, self.top_k):
+            top_k_distances = np.nanargmin(self._relevant_distances)
+            k.extend([top_k_distances])
+            self._relevant_distances[top_k_distances] = np.nan  # Exclude.
+
+        self._k = k
+
+    def compute_distances(self) -> None:
+
+        self._compute_distances()
+
+    def get_top_k(self) -> list[int]:
+
+        assert self._distances is not None, 'Compute distances first.'
+
+        self._remove_zeros()
+        self._select_relevant_distances()
+        self._top_k()
+
+        return self._k
+
 
     
 
