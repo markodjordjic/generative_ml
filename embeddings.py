@@ -22,7 +22,6 @@ if __name__ == '__main__':
             [embedding.get_embeddings()]
         )
 
-    len(film_summary_embeddings)
     film_summary_tabe = pd.DataFrame.from_records(film_summary_embeddings)
 
     latent_feature_analysis = PCA()
