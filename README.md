@@ -1,5 +1,7 @@
-# generative_ml
+# Generative_ml
 Generic experimentation with Generative ML methods
 
-# Playlist Generator
+# Demos
+Automatized generation of Spotify Playlists on the basis of prompt:
+[Playlist Generator](playlist_generator_demo.html)
 

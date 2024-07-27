@@ -25,7 +25,7 @@ Apply the following format to each change proposal:
 
 	1. 	Add exactly one <issue:> block, in which you should explain 
 		what you are changing and why.
-	2. 	Put original code that you propose to change put in a <find:>
+	2. 	Put original code that you propose to change in a <find:>
 		block.
 	3. 	Put proposed code change in a <replace:> block.
 	4. 	Each change proposal can contain more than one <find:> and 
@@ -57,11 +57,10 @@ Second code to find
 Second code to replace
 <message:>
 
-Apply the following fortmat for asking questions or making comments:
+Apply the following format for asking questions or making comments:
 
 	1. 	If you need further information use the <message:> block, 
 		according to the example below:
 
 <message:>
 Can you provide further explanation?
-
