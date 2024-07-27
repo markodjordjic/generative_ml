@@ -2,6 +2,7 @@
 from operations.playlist_generating import PlayListGenerator
 from playlist_making.playlist_maker import PlayListMaker
 
+
 if __name__ == '__main__':
 
     PLAYLIST_NAME = 'Surf Rock'
@@ -9,7 +10,7 @@ if __name__ == '__main__':
     playlist_generator = PlayListGenerator(
         count=8,
         description=PLAYLIST_NAME,
-        mode='interactive'
+        mode='singular'
     )
     playlist_generator.generate_list()
     playlist_generator.write_history(path='playlist_generator_history.json')
