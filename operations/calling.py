@@ -95,7 +95,7 @@ class ChatCaller:
 class Embeddings:
 
     def __init__(self, 
-                 raw_text: str, 
+                 raw_text: str = None, 
                  model: str = 'text-embedding-ada-002') -> None:
         self.raw_text = raw_text
         self.model = model

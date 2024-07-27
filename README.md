@@ -2,6 +2,8 @@
 Generic experimentation with Generative ML methods
 
 # Demos
-Automatized generation of Spotify Playlists:
+Theme based generation of Spotify Playlists:
 [Playlist Generator](https://markodjordjic.github.io/generative_ml/playlist_generator_demo.html)
+Embeddings as the basis for identification of text similarity
+[Embedings]
 
