@@ -90,3 +90,26 @@ class ChatCaller:
     def get_response(self):
 
         return self.post_processed_response
+
+
+class Embeddings:
+
+    def __init__(self, 
+                 raw_text: str, 
+                 model: str = 'text-embedding-ada-002') -> None:
+        self.raw_text = raw_text
+        self.model = model
+        self.raw_embeddings = None
+
+    def generate_embeddings(self):
+
+        assert self.raw_text is not None, 'No raw text provided.'
+
+        self.raw_embeddings = openai.embeddings.create(
+            input=self.raw_text,
+            model=self.model
+        )
+
+    def get_embeddings(self):
+        
+        return self.raw_embeddings.data[0].embedding
