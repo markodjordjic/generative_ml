@@ -1,6 +1,6 @@
-from utilities.general import environment_reader
+import numpy as np
 import openai
-
+from utilities.general import environment_reader
 
 environment = environment_reader(env_file='./.env')
 
@@ -90,3 +90,53 @@ class ChatCaller:
     def get_response(self):
 
         return self.post_processed_response
+
+
+class Embeddings:
+
+    def __init__(self, 
+                 raw_text: str = None, 
+                 model: str = 'text-embedding-3-small') -> None:
+        self.raw_text = raw_text
+        self.model = model
+        self.raw_embeddings = None
+
+    def generate_embeddings(self):
+
+        assert self.raw_text is not None, 'No raw text provided.'
+
+        self.raw_embeddings = openai.embeddings.create(
+            input=self.raw_text,
+            model=self.model
+        )
+
+    def get_embeddings(self):
+        
+        return self.raw_embeddings.data[0].embedding
+    
+
+class EmbeddingManager:
+
+    def __init__(self,
+                 texts: list[str], 
+                 limit: int = None) -> None:
+        self.texts = texts
+        self.limit = limit
+        self._embeddings = []
+
+    def generate_embeddings(self):
+
+        assert self.texts is not None, 'Pieces of text are not provided.'
+
+        for index, piece_of_text in enumerate(self.texts):
+            if self.limit is not None:
+                if self.limit < index+1:
+                    break
+            print(f"Embedding piece of text: {index+1} out of {len(self.texts)}")
+            embedding = Embeddings(raw_text=piece_of_text)
+            embedding.generate_embeddings()
+            self._embeddings.extend([embedding.get_embeddings()])
+
+    def get_embeddings(self):
+
+        return np.array(self._embeddings)
