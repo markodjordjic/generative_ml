@@ -20,24 +20,26 @@ raw_data = pd.read_csv(
 # It is fairly easy to generate embeddings.
 # %%
 film_summary_embeddings = []
-for film_name, film_summary in zip(raw_data.loc[:, 'film_name'], raw_data.loc[:, 'content']):
+for film_name, film_summary in zip(raw_data.loc[:, 'film_name'], 
+                                   raw_data.loc[:, 'content']):
     print(f'Making embedding for {film_name}')
     embedding = Embeddings(raw_text=film_summary)
     embedding.generate_embeddings()
     film_summary_embeddings.extend([embedding.get_embeddings()])
 
 film_data = pd.DataFrame.from_records(film_summary_embeddings)
+
 # %% [markdown]
 # Once that embeddings are available, it is possible to perform some of
 # the latent feature analyses. This will (a) preserve the most of the
 # variance in the data, while at the same time providing us (b) to
-# compute similiarity measurement at fraction of the cost, of what
+# compute similarity measurement at fraction of the cost, of what
 # would be required if we would be using original embeddings.
 # Computation over two dimensions is much faster than the computation
 # over thousands of dimensions.
 # %% 
 latent_feature_analyses = LatentFeatureAnalysis(
-    data=film_data,
+    data=film_data.values,
     method='PCA'
 )
 latent_feature_analyses.execute_analysis()
@@ -49,6 +51,7 @@ latent_feature_analyses.execute_analysis()
 reference_movie = 'The Batman'
 mask = raw_data.loc[:, 'film_name'] == reference_movie
 reference_index = raw_data.index[mask].to_list()[0]
+print(reference_index)
 # %% [markdown]
 # Now that index of the reference movie is retrieved, it is possible to
 # utilize it in the measurement of similarity and identification of the
@@ -58,14 +61,15 @@ reference_index = raw_data.index[mask].to_list()[0]
 similarity_measurement = SimilarityMeasurement(
     data=latent_feature_analyses.get_reduction(),
     reference_index=reference_index,
-    top_k=10,
+    top_k=2,
     method='euclidean'
 )
 similarity_measurement.compute_distances()
-top_most_similar = similarity_measurement.get_top_k()
 # %% [markdown]
 # Let us discover most similar movies, to our reference movie, according
 # embeddings and LFA performed.
 # %%
-for most_similar in top_most_similar:
-    print(raw_data.iloc[most_similar]['film_name'])
+for most_similar in similarity_measurement.get_top_k():
+    name =  raw_data.iloc[most_similar, :]['film_name']
+    source = raw_data.iloc[most_similar, :]['source'] 
+    print(f"{name}, {source}")

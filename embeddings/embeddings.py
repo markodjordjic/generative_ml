@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.decomposition import PCA
-from sklearn.metrics import euclidean_distances
+from sklearn.metrics import DistanceMetric
 
 class LatentFeatureAnalysis:
 
@@ -10,24 +10,27 @@ class LatentFeatureAnalysis:
         self.transformer = None
         self._reduction = None
 
-    def _initialize_transformer(self):
+    def _initialize_transformer(self) -> None:
         if self.method == 'PCA':
             self.transformer = PCA(n_components=2)
 
-    def _fit(self):
+    def _fit(self) -> None:
+
         assert self.data is not None, 'No data.'
  
         self.transformer.fit(X=self.data, y=None)
 
-    def _transform(self):        
+    def _transform(self) -> None:        
         self._reduction = self.transformer.transform(X=self.data)
 
-    def execute_analysis(self):
+    def execute_analysis(self) -> None:
         self._initialize_transformer()
         self._fit()
         self._transform()
     
-    def get_reduction(self):
+    def get_reduction(self) -> np.array:
+
+        assert self._reduction is not None, 'No reduction.'
 
         return self._reduction
 
@@ -43,13 +46,24 @@ class SimilarityMeasurement:
         self.method = method
         self.reference_index = reference_index
         self.top_k = top_k
+        self._metric = None
         self._distances = None
         self._relevant_distances = None
         self._k = None
 
-    def _compute_distances(self) -> None:
+    def _initialize_metric(self) -> None:
         if self.method == 'euclidean':
-            self._distances = euclidean_distances(self.data)
+            self._metric = DistanceMetric().get_metric('euclidean')
+        if self.method == 'manhattan':
+            self._metric = DistanceMetric().get_metric('manhattan')
+        if self.method == 'mahalanobis':
+            self._metric = DistanceMetric().get_metric('mahalanobis')
+
+    def _compute_distances(self) -> None:
+
+        assert self._metric is not None, 'Metric not initialized.'
+ 
+        self._distances = self._metric.pairwise(self.data, self.data)
 
     def _remove_zeros(self) -> None:
 
@@ -72,6 +86,7 @@ class SimilarityMeasurement:
 
     def compute_distances(self) -> None:
 
+        self._initialize_metric()
         self._compute_distances()
 
     def get_top_k(self) -> list[int]:
