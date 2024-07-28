@@ -1,5 +1,5 @@
 import requests
-
+import bs4
 
 class GenericScraper:
 
@@ -22,3 +22,4 @@ class WikiScraper(GenericScraper):
         self.page = page
 
     
+
