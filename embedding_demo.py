@@ -5,7 +5,7 @@
 # Firstly, let us make the necessary imports.
 # %%
 import pandas as pd
-from operations.calling import Embeddings
+from operations.calling import EmbeddingManager
 from embeddings.embeddings import LatentFeatureAnalysis, SimilarityMeasurement
 # %% [markdown]
 # # Import the data
@@ -19,16 +19,13 @@ raw_data = pd.read_csv(
 # %% [markdown]
 # It is fairly easy to generate embeddings.
 # %%
-film_summary_embeddings = []
-for film_name, film_summary in zip(raw_data.loc[:, 'film_name'], 
-                                   raw_data.loc[:, 'content']):
-    print(f'Making embedding for {film_name}')
-    embedding = Embeddings(raw_text=film_summary)
-    embedding.generate_embeddings()
-    film_summary_embeddings.extend([embedding.get_embeddings()])
-
-film_data = pd.DataFrame.from_records(film_summary_embeddings)
-
+pieces_of_text = [summary for summary in raw_data.loc[:, 'content'].values]
+embedding_manager = EmbeddingManager(
+    texts=pieces_of_text,
+    limit=None
+)
+embedding_manager.generate_embeddings()
+embeddings = embedding_manager.get_embeddings()
 # %% [markdown]
 # Once that embeddings are available, it is possible to perform some of
 # the latent feature analyses. This will (a) preserve the most of the
@@ -39,7 +36,7 @@ film_data = pd.DataFrame.from_records(film_summary_embeddings)
 # over thousands of dimensions.
 # %% 
 latent_feature_analyses = LatentFeatureAnalysis(
-    data=film_data.values,
+    data=embeddings,
     method='PCA'
 )
 latent_feature_analyses.execute_analysis()
@@ -61,15 +58,19 @@ print(reference_index)
 similarity_measurement = SimilarityMeasurement(
     data=latent_feature_analyses.get_reduction(),
     reference_index=reference_index,
-    top_k=2,
+    top_k=5,
     method='euclidean'
 )
 similarity_measurement.compute_distances()
+top_k_distances = similarity_measurement.get_top_k()
 # %% [markdown]
 # Let us discover most similar movies, to our reference movie, according
 # embeddings and LFA performed.
 # %%
-for most_similar in similarity_measurement.get_top_k():
-    name =  raw_data.iloc[most_similar, :]['film_name']
+for most_similar in top_k_distances:
+    name = raw_data.iloc[most_similar, :]['film_name']
     source = raw_data.iloc[most_similar, :]['source'] 
     print(f"{name}, {source}")
+# %% [markdown]
+# As it can be seen from the results, embeddings, LFA and similarity
+# measurements require further investigation.
