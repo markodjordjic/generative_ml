@@ -1,5 +1,7 @@
 import unittest
 from utilities.scraping import WikiScraper
+from bs4 import BeautifulSoup
+
 
 class TestWebScraping(unittest.TestCase):
 
@@ -15,11 +17,20 @@ class TestWebScraping(unittest.TestCase):
             page='https://en.wikipedia.org/wiki/Artistic_swimming_at_the_2024_Summer_Olympics',
         )
         wiki_scraper.scrape_page()
-        wiki_scraper.get_content()
+        content = wiki_scraper.get_content()
+        soup = BeautifulSoup(content, 'html.parser')
+        #items = soup.find_all(name='table')
+        indiatable=soup.find('table',{'class':"wikitable plainrowheaders"})
+        import pandas as pd
+        table = pd.DataFrame(pd.read_html(str(indiatable)))
+        for item in items:
+            print(item)
+            if 'Medal summary' in item:
+                childen = soup.findChildren(item)
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(TestWebScraping('test_find_and_replace'))
+    suite.addTest(TestWebScraping('test_wiki_scraper'))
 
     return suite
 

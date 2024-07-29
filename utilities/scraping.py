@@ -12,7 +12,7 @@ class GenericScraper:
 
     def get_content(self):
 
-        return self._page_content
+        return self._page_content.content
     
 
 class WikiScraper(GenericScraper):
