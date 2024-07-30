@@ -5,7 +5,7 @@
 # Firstly, let us make the necessary imports.
 # %%
 import pandas as pd
-from operations.calling import EmbeddingManager
+from operations.operation import EmbeddingManager
 from embeddings.embeddings import LatentFeatureAnalysis, SimilarityMeasurement
 # %% [markdown]
 # # Import the data
