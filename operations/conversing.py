@@ -1,21 +1,21 @@
 from pathlib import Path
 import json
 from utilities.general import to_single_line
-from operations.calling import ChatCaller
+from operations.operation import ChatCaller
 
 class GenericChatBot:
 
-    history = []
     chatbot = ChatCaller(max_tokens=4096, temperature=0)
 
     def __init__(self, personality: 'str' = None):
+        self.history = []  # Reset.
         self.personality = personality
 
     def _initiate_personality(self):
 
         if self.personality is not None:
             raw_system_content = f"""
-                You are a chatbot. Your personality is: {self.personality} 
+                You are an assistant. Your personality is: {self.personality} 
             """
 
             system_content = to_single_line(raw_system_content)

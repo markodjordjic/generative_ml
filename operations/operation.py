@@ -4,6 +4,15 @@ from utilities.general import environment_reader
 
 environment = environment_reader(env_file='./.env')
 
+class OperationManager:
+
+    def __init__(self,
+                 texts: list[str], 
+                 limit: int = None) -> None:
+        self.texts = texts
+        self.limit = limit
+        self._operation_outcome = []
+
 
 class CompletionCaller:
 
