@@ -1,4 +1,9 @@
+import io
+import matplotlib.image
+import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
+import base64
 import openai
 from utilities.general import environment_reader
 
@@ -149,3 +154,39 @@ class EmbeddingManager:
     def get_embeddings(self):
 
         return np.array(self._embeddings)
+
+
+class ImageCaller:
+
+    openai.api_key = environment['OPEN_API_KEY']
+
+    def __init__(self, prompt: str = None) -> None:
+        self.prompt = prompt
+        self._image_b64 = None
+
+    def generate_image(self):
+
+        assert self.prompt, 'No prompt provided.'
+        output = openai.images.generate(
+            prompt=self.prompt,
+            size="512x512",
+            n=1,
+            response_format='b64_json'
+        )
+        self._image_b64 = output.data[0].b64_json
+
+    def display_image(self):
+        image = base64.b64decode(self._image_b64)
+        buffer = io.BytesIO(image)
+        array = matplotlib.image.imread(buffer, format='JPG')
+        plt.plot(array)
+        plt.show(array)
+
+
+    # def plot(self):
+    #     image = BytesIO()
+    #     x = numpy.linspace(0, 10)
+    #     y = numpy.sin(x)
+    #     pyplot.plot(x, y)
+    #     pyplot.savefig(image, format='png')
+    #     return base64.encodestring(image.getvalue())
