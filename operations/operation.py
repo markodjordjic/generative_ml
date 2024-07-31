@@ -169,7 +169,7 @@ class ImageCaller:
         assert self.prompt, 'No prompt provided.'
         output = openai.images.generate(
             prompt=self.prompt,
-            size="512x512",
+            size="256x256",
             n=1,
             response_format='b64_json'
         )
@@ -179,8 +179,11 @@ class ImageCaller:
         image = base64.b64decode(self._image_b64)
         buffer = io.BytesIO(image)
         array = matplotlib.image.imread(buffer, format='JPG')
-        plt.plot(array)
-        plt.show(array)
+        plt.imshow(array)
+        plt.tick_params(labeltop=True, labelright=True)
+        plt.tick_params(axis='both', direction='in')
+        plt.tick_params(bottom=True, top=True, left=True, right=True)        
+        plt.show()
 
 
     # def plot(self):
