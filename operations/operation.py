@@ -185,6 +185,8 @@ class ImageCaller:
         plt.tick_params(bottom=True, top=True, left=True, right=True)        
         plt.show()
 
+        
+
 
     # def plot(self):
     #     image = BytesIO()
