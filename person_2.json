@@ -1,0 +1,231 @@
+{
+    "public_identifier": "andrew-ng-673b7414",
+    "profile_pic_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/person/andrew-ng-673b7414/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240803%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240803T081901Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=5e89837084675fd1142c563069287c83b8f41c546e0bb58eb8c9bfcc814e8d06",
+    "background_cover_image_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/person/andrew-ng-673b7414/cover?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240803%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240803T081901Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=2ffa2f4e2c49442c96df7a8007f2833ae0175a379d1b304a5d842c936f9b186c",
+    "first_name": "Andrew",
+    "last_name": "Ng",
+    "full_name": "Andrew Ng",
+    "occupation": "Rates and Credit Business Manager, Director at UBS at UBS",
+    "headline": "Rates and Credit Business Manager, Director at UBS",
+    "summary": "Experienced Rates & Credit Business Manager with a demonstrated history of working in the financial services industry. Strong business development professional skilled in Finance (Profit & Loss / Balancesheet), Project management and Regulatory framework.",
+    "country": "US",
+    "country_full_name": "United States of America",
+    "city": "New York City Metropolitan Area",
+    "experiences": [
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 3,
+                "year": 2015
+            },
+            "ends_at": null,
+            "company": "UBS",
+            "company_linkedin_profile_url": "https://www.linkedin.com/company/ubs",
+            "company_facebook_profile_url": null,
+            "title": "Rates and Credit Business Manager, Director at UBS",
+            "description": "\u2022 Created the entire front to back framework (Controls, Regulatory and risk management) for trading Preferred stock and Exchange Traded Fund (ETF) in the Credit and Rates business\n\u2022 Cost review, tracking benefits and managing of vendor services and contracts\n\u2022 Representing the business at various committees, including corporate level governance and regulatory meetings (FINRA / FEDS)\n\u2022 Chair the FX, Rates and Credit (FRC) Electronic Communication Network (ECN) governance forum \n\u2022 Manage the rollout of mifid requirements for the Credit business\n\u2022 Build out of interim order handling solution for FRC sales and trading in the US to meet regulatory requirements and expanded to comply with mifid requirements\n\u2022 Chair the weekly global Rates and Credit production meetings\n\u2022 Project manage and leading of electronic trading build up for the Credit business globally\n\u2022 Acting as key component of control framework and ongoing effective running of business through interaction with groups such as operational risk and engagement with supervisory processes and trading mandates \n\u2022 Acting as liaison point between business and support functions, ensuring business requirements are met and standards held \n\u2022 Meeting with vendor to implement solution and changes to the business\n\u2022 Preparation of presentations for senior management committees covering global credit performance, cost and regulatory challenges\n\u2022 Running and implement new business initiatives for the credit business\n\u2022 Coordinating with global project managers on the implementation of regulatory\nchanges\n\u2022 Strategizing with Desk head on budget, headcount, balance sheet utilization & cost and business planning",
+            "location": "Greater New York City Area",
+            "logo_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/company/ubs/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240803%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240803T081902Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=host&X-Amz-Signature=d87819a0d8edd577aa86b5567e582813a8096ccaedc1d640ef52aa9102e73d0b"
+        },
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 1,
+                "year": 2012
+            },
+            "ends_at": {
+                "day": 31,
+                "month": 3,
+                "year": 2015
+            },
+            "company": "UBS",
+            "company_linkedin_profile_url": "https://www.linkedin.com/company/ubs",
+            "company_facebook_profile_url": null,
+            "title": "US and London Credit Product Controller",
+            "description": "\u2022 Took over as US and London Credit Product Controller and transited to New York.\n\u2022 Led the offshoring project and performed training in both London and India\n\u2022 Improve reporting and value added services to stakeholders, standardize process and reporting globally (US, EMEA and APAC) for the credit business\n\u2022 Reviewing and managing of production analyst\u2019s performance and work\n\u2022 Substantiate P&L moves using risk and revaluation methods for explains\n\u2022 Provide face off with Front office on business related issues and provide control metrics\n\u2022 Interaction with various control and IT functions to ensure accurate P&L / balance sheet reporting\n\u2022 Participation in UAT and validating test results on projects and firm initiatives\n\u2022 Month end close analysis, disclosure and articulation of results to trading desk",
+            "location": "Greater New York City Area",
+            "logo_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/company/ubs/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240803%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240803T081902Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=host&X-Amz-Signature=d87819a0d8edd577aa86b5567e582813a8096ccaedc1d640ef52aa9102e73d0b"
+        },
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 4,
+                "year": 2010
+            },
+            "ends_at": {
+                "day": 31,
+                "month": 1,
+                "year": 2012
+            },
+            "company": "Barclays Capital",
+            "company_linkedin_profile_url": null,
+            "company_facebook_profile_url": null,
+            "title": "Portfolio Management Product Controller,  Analyst",
+            "description": "\u2022 Creation of macros and simplification of manual process and spreadsheets for improved accuracy and financial reporting\n\u2022 Interaction with trading and risk on trading activities, accounting and capital treatment\n\u2022 Analyze all aspects of daily P&L and monitor mandate / stop loss breaches\n\u2022 Understanding and substantiation of balance sheet and trading intent\n\u2022 Liaise with front office on price testing results and computation of reserves \n\u2022 Reconciliation of SPV structure involving trading, operations and external parties\n\u2022 Participation and discussion of new business initiatives\n\u2022 Participation of IT and project developments",
+            "location": "Singapore",
+            "logo_url": null
+        },
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 8,
+                "year": 2007
+            },
+            "ends_at": {
+                "day": 30,
+                "month": 4,
+                "year": 2010
+            },
+            "company": "Credit Suisse",
+            "company_linkedin_profile_url": "https://www.linkedin.com/company/credit-suisse",
+            "company_facebook_profile_url": null,
+            "title": "Credit Flow Product Controller and Structured Trade Reviewer, ENO",
+            "description": "\u2022 Created tools and process documents to improve knowledge and efficiency of the team and stakeholders\n\u2022 Reconciliation between front office spreadsheets and the back office systems\n\u2022 Perform Structured Trade Reviews ensuring economics of trades are accurate\n\u2022 Analyze and providing commentary to various departments on the significant market and position contributors. \n\u2022 Manage all marketing and risk provisions on the books to ensure accurate P&L reporting\n\u2022 Liaise with front office and other end users as to process development and other ad hoc queries \n\u2022 Ensuring the accuracy and integrity of revenues generated by the trading desk.",
+            "location": "Singapore",
+            "logo_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/company/credit-suisse/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240803%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240803T081902Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=host&X-Amz-Signature=07fd683f619574689ac5944f7097d85af1ef06930eb2ed81a292eab07454c63b"
+        },
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 1,
+                "year": 2002
+            },
+            "ends_at": {
+                "day": 30,
+                "month": 6,
+                "year": 2002
+            },
+            "company": "Knight Frank",
+            "company_linkedin_profile_url": "https://www.linkedin.com/company/knight-frank",
+            "company_facebook_profile_url": null,
+            "title": "Director\u2019s Assistant (Internship)",
+            "description": "Marketing and Client Management\nAssisted Director in evaluation of property value and demand.\nProcessed potential customers\u2019 data to Agents.\nUpdating of customers\u2019 database in company\u2019s system.\nInteracting with clients to match property to demand.",
+            "location": "Singapore",
+            "logo_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/company/knight-frank/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240803%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240803T081902Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=host&X-Amz-Signature=f35e6658c17633731ae998a011ef7ebb624b6e6170a72bbfe10d7a8ef0ec57ad"
+        }
+    ],
+    "education": [
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 1,
+                "year": 2006
+            },
+            "ends_at": {
+                "day": 31,
+                "month": 12,
+                "year": 2008
+            },
+            "field_of_study": "Finance",
+            "degree_name": "Finance",
+            "school": "Singapore Institute of Management",
+            "school_linkedin_profile_url": "https://www.linkedin.com/school/singapore-institute-of-management/",
+            "school_facebook_profile_url": null,
+            "description": null,
+            "logo_url": "https://s3.us-west-000.backblazeb2.com/proxycurl/company/singapore-institute-of-management/profile?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=0004d7f56a0400b0000000001%2F20240803%2Fus-west-000%2Fs3%2Faws4_request&X-Amz-Date=20240803T081902Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=host&X-Amz-Signature=3c128454c3c00e4301f004f5876b112faaf867c84ab440b219893586f7f39a32",
+            "grade": "Merit",
+            "activities_and_societies": null
+        },
+        {
+            "starts_at": {
+                "day": 1,
+                "month": 1,
+                "year": 2000
+            },
+            "ends_at": {
+                "day": 31,
+                "month": 12,
+                "year": 2002
+            },
+            "field_of_study": "Banking and Finance; Banking and Finance",
+            "degree_name": "Diploma",
+            "school": "Nanyang Polytechnic",
+            "school_linkedin_profile_url": null,
+            "school_facebook_profile_url": null,
+            "description": null,
+            "logo_url": null,
+            "grade": null,
+            "activities_and_societies": "Business Debates Team\nPresident of Business IT Club"
+        }
+    ],
+    "connections": 413,
+    "activities": [
+        {
+            "title": "Sometimes the least bad option is still a good optionI started doing term deposit since about half a year ago. A few of my colleagues were puzzled\u2026",
+            "link": "https://www.linkedin.com/posts/hpoon_sometimes-the-least-bad-option-is-still-a-activity-6991594789766914048-MQHI",
+            "activity_status": "Liked by Andrew Ng"
+        },
+        {
+            "title": "It is VITAL that we stop drawing a line between wider spreads in bond prices and liquidity because it encourages perennial bond buying by central\u2026",
+            "link": "https://www.linkedin.com/posts/chris-white-bb39233_bond-liquidity-dries-up-activity-6986629228058267649-oJLb",
+            "activity_status": "Liked by Andrew Ng"
+        },
+        {
+            "title": "Very proud of my wife\u2026 entrepreneurs are the real risk takers who make the economy go round.",
+            "link": "https://www.linkedin.com/posts/robert-laux-cfa-0143471a7_it-was-no-piece-of-cake-getting-our-stores-activity-6959509275685613569-Tq_U",
+            "activity_status": "Liked by Andrew Ng"
+        },
+        {
+            "title": "It\u2019s internship season again. Below are 3 things I found myself telling every incoming class of interns year over year: 1) The goal of your\u2026",
+            "link": "https://www.linkedin.com/posts/hpoon_its-internship-season-again-below-are-activity-6947872231536353280-KWQY",
+            "activity_status": "Liked by Andrew Ng"
+        },
+        {
+            "title": "I\u2019m happy to share that I\u2019m starting a new position as Head of Leveraged Loan Trading at MUFG!",
+            "link": "https://www.linkedin.com/posts/garret-rowan-cfa-bb2b5ba_im-happy-to-share-that-im-starting-a-new-activity-6947661944795365376-dWTu",
+            "activity_status": "Liked by Andrew Ng"
+        },
+        {
+            "title": "After more than ten years at UBS I said my farewells last week. From the bottom of my heart, I thank all my colleagues and managers for an amazing\u2026",
+            "link": "https://www.linkedin.com/posts/robert-laux-cfa-0143471a7_after-more-than-ten-years-at-ubs-i-said-my-activity-6939460755364691968-3HmQ",
+            "activity_status": "Liked by Andrew Ng"
+        },
+        {
+            "title": "I escaped office politics 10+ years ago.My superpower? Remote work.I don't:- want to play video games in the lounge.- want to go to happy\u2026",
+            "link": "https://www.linkedin.com/posts/kenyarmosh_productivity-business-culture-activity-6918925845298348032-xSn8",
+            "activity_status": "Liked by Andrew Ng"
+        },
+        {
+            "title": "#resignation One of my team members resigned. He felt almost sorry for letting me know about his decision. I pushed for a better rating for him\u2026",
+            "link": "https://www.linkedin.com/posts/coachrahulgupta_resignation-transformahead-leadership-activity-6919487381960036353-s6xy",
+            "activity_status": "Liked by Andrew Ng"
+        },
+        {
+            "title": "Photo",
+            "link": "https://www.linkedin.com/posts/stephenmhallam_product-technology-roadmapping-stephen-activity-6910635323613966336-YpFl",
+            "activity_status": "Liked by Andrew Ng"
+        }
+    ],
+    "similarly_named_profiles": [
+        {
+            "name": "Andrew Ng",
+            "link": "https://au.linkedin.com/in/andrew-ng-1468675b",
+            "summary": "Doctor",
+            "location": "Greater Sydney Area"
+        },
+        {
+            "name": "Andrew Ng",
+            "link": "https://www.linkedin.com/in/andrewyng",
+            "summary": "Founder and CEO of Landing AI (We're hiring!); Founder of DeepLearning.AI, Managing General Partner at AI Fund",
+            "location": "Palo Alto, CA"
+        },
+        {
+            "name": "Andrew Ng",
+            "link": "https://sg.linkedin.com/in/andrew-ng-73488571",
+            "summary": "Vice President at MUFG",
+            "location": "Singapore"
+        },
+        {
+            "name": "Andrew Ng",
+            "link": "https://sg.linkedin.com/in/andrew-ng-582013101",
+            "summary": "Assistant Manager - Group Operations",
+            "location": "Singapore"
+        },
+        {
+            "name": "andrew ng",
+            "link": "https://sg.linkedin.com/in/andrew-ng-76021b34",
+            "summary": "Business Development and Investment Manager",
+            "location": "Singapore"
+        }
+    ]
+}
