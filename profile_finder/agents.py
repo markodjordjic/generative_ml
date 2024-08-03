@@ -17,7 +17,7 @@ def get_profile_url_tavily(name: str):
     return res[0]["url"]
 
 class GenericAgent:
-    """Base class with common methods fro all agents
+    """Base class with common methods for all agents
     
     """
 
@@ -53,7 +53,6 @@ class LinkedInAgent(GenericAgent):
 
     def __init__(self, name_to_look: str = None) -> None:
         super().__init__(name_to_look)
-        self.name_to_look = name_to_look
         self.prompt = PromptTemplate(
             template=self.prompt_text, input_variables=self.name_to_look
         )

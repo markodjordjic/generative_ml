@@ -1,26 +1,23 @@
+from dataclasses import dataclass
 import requests
-from typing import List, Dict, Any
 from langchain.prompts.prompt import PromptTemplate
-from utilities.general import environment_reader
-from profile_finder.agents import LinkedInAgent
 from langchain.output_parsers import PydanticOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.runnables import RunnableSequence
 from langchain_openai.chat_models import ChatOpenAI
+from utilities.general import environment_reader
+from profile_finder.agents import LinkedInAgent
 
 
 ENVIRONMENT = environment_reader(env_file='./.env')
 
-llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
-
 class Summary(BaseModel):
-    summary: str = Field(description="summary")
-    facts: List[str] = Field(description="interesting facts about them")
+    summary: str = Field(description="Summary")
+    facts: list[str] = Field(description="Facts")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, str]:
+        
         return {"summary": self.summary, "facts": self.facts}
-
-summary_parser = PydanticOutputParser(pydantic_object=Summary)
 
 
 class GenericProfileFinder:
@@ -29,14 +26,14 @@ class GenericProfileFinder:
         self.name_to_look = name_to_look
         self._agent = None
 
-class LinkedInProfileFinder(GenericProfileFinder) :
+class LinkedInProfileFinder(GenericProfileFinder):
 
     def __init__(self, name_to_look: str = None) -> None:
         super().__init__(name_to_look)
-        self.name_to_look = name_to_look
 
     def _instantiate_agent(self):
         assert self.name_to_look is not None, 'Name to look not provided.'
+        
         self._agent = LinkedInAgent(name_to_look=self.name_to_look)
 
     def acquire_user_url(self):
@@ -46,48 +43,101 @@ class LinkedInProfileFinder(GenericProfileFinder) :
     def get_user_url(self):
 
         return self._agent.get_profile()
+    
 
-def scrape_linkedin_profile(linkedin_profile_url: str):
+class LinkedInProfileScraper:
+
     PROXYCURL_API_KEY = ENVIRONMENT['PROXYCURL_API_KEY']
 
     api_endpoint = "https://nubela.co/proxycurl/api/v2/linkedin"
 
-    header_dic = {"Authorization": f'Bearer {PROXYCURL_API_KEY}'}
+    header = {"Authorization": f'Bearer {PROXYCURL_API_KEY}'}
 
-    response = requests.get(
-        api_endpoint,
-        params={"url": linkedin_profile_url},
-        headers=header_dic,
-        timeout=10
-    )
+    def __init__(self, linkedin_profile_url: str) -> None:
+        self.linkedin_profile_url = linkedin_profile_url
+        self._response = None
+        self._data = None
 
-    data = response.json()
-    data = {
-        k: v
-        for k, v in data.items()
-        if v not in ([], "", "", None)
-        and k not in ["people_also_viewed", "certifications"]
-    }
-    if data.get("groups"):
-        for group_dict in data.get("groups"):
-            group_dict.pop("profile_pic_url")
+    def _scrape_linkedin_profile(self):
 
-    return data
+        assert self.linkedin_profile_url is not None, 'No profile.'
 
-def get_summary_chain() -> RunnableSequence:
+        self._response = requests.get(
+            self.api_endpoint,
+            params={"url": self.linkedin_profile_url},
+            headers=self.header,
+            timeout=10
+        )
+
+    def _extract_data(self) -> None:
+
+        assert self._response is not None, 'No response'
+
+        data = self._response.json()
+        data = {
+            k: v
+            for k, v in data.items()
+            if (v not in ([], "", "", None))
+            and (k not in ["people_also_viewed", "certifications"])
+        }
+        if data.get("groups"):
+            for group_dict in data.get("groups"):
+                group_dict.pop("profile_pic_url")
+
+        self._data = data
+
+    def scrape_linkedin_data(self) -> None:
+        self._scrape_linkedin_profile()
+        self._extract_data()
+
+    def get_scraped_data(self):
+
+        assert self._data is not None, 'No extracted data'
+        
+        return self._data
+
+class Summarizer:
+
     summary_template = """
-         given the information about a person from linkedin {information}:
-         1. a short summary
-         2. two interesting facts about them
-         \n{format_instructions}
-     """
+        Buy taking into account this information {information} collected 
+        about a person create:
+            1. a summary about the person, and a list
+            2. of two interesting facts about them.
+        Do not exceed 384 characters in your response.
+        Format your response according to the following instructions: 
+        {format_instructions}
+    """
+      
+    summary_parser = PydanticOutputParser(pydantic_object=Summary)
+
+    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
 
     summary_prompt_template = PromptTemplate(
         input_variables=["information"],
         template=summary_template,
         partial_variables={
             "format_instructions": summary_parser.get_format_instructions()
-        },
+        }
     )
 
-    return summary_prompt_template | llm | summary_parser
+    def __init__(self, profile_data: dict) -> None:
+        self.profile_data = profile_data
+        self._chain: RunnableSequence = None
+        self._summary: Summary = None   
+
+    def _get_summary_chain(self):
+        self._chain = \
+            self.summary_prompt_template | self.llm | self.summary_parser
+        
+    def make_summary(self) -> None:
+
+        assert self.profile_data is not None, 'No profile data'
+
+        self._get_summary_chain()
+        self._summary = self._chain.invoke(
+            input={"information": self.profile_data}
+        )
+
+    def get_summary(self) -> Summary:
+
+        return self._summary
