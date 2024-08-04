@@ -2,10 +2,15 @@ import time
 from pathlib import Path
 from langchain_community.document_loaders import TextLoader, PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_pinecone import PineconeVectorStore
+from langchain_core.prompts import PromptTemplate
+from langchain import hub
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains.retrieval import create_retrieval_chain
 from pinecone import Pinecone, ServerlessSpec  
 from utilities.general import environment_reader
+
 
 environment = environment_reader(env_file='./.env')
 
@@ -131,7 +136,61 @@ class OpenAIEmbedder(GenericEmbedder):
         self._initialize_embedder()
         self._initialize_vector_store()
         self._embed()
+
+
+class Rag:
+
+    embeddings = OpenAIEmbeddings()
+    llm = ChatOpenAI()
+    vector_store = PineconeVectorStore(
+        index_name=environment["PINECONE_PROJECT_INDEX"], embedding=embeddings
+    )
+
+    query = """Provide me with a detailed insight on how to perform
+        sport massage of the deltoid muscle? Limit your answer to
+        768 characters.
+    """
+
+    def __init__(self, augmented: bool = False) -> None:
+        self.augmented = augmented
+        self._chain = None
+        self._augmented_chain = None
+        self._raw_output = None
+        self._output = None
+
+    def _instantiate_chain(self):
+        self._chain = \
+            PromptTemplate.from_template(template=self.query) | self.llm
+        
+    def _instantiate_augmented_chain(self):
+        combine_docs_chain = create_stuff_documents_chain(
+            self.llm, hub.pull("langchain-ai/retrieval-qa-chat")
+        )
+        self._augmented_chain = create_retrieval_chain(
+            retriever=self.vector_store.as_retriever(), 
+            combine_docs_chain=combine_docs_chain
+        )
+
+    def invoke_chain(self):
+
+        if self.augmented:
+            self._raw_output = self._augmented_chain.invoke(
+                input={"input": self.query}
+            )
+            self._output = self._raw_output['answer']
     
+        else: 
+            self._raw_output = self._chain.invoke(input={})
+            self._output = self._raw_output.content
+    
+    def get_output(self):
+        
+        assert self._output is not None
+
+        return self._output
+
+
+
 
 
 
