@@ -5,13 +5,14 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI, OpenAI
 from langchain_pinecone import PineconeVectorStore
 from langchain_community.vectorstores import FAISS
-from langchain_core.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate, ChatPromptTemplate, MessagesPlaceholder
 from langchain import hub
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.retrieval import create_retrieval_chain
 from pinecone import Pinecone, ServerlessSpec  
 from utilities.general import environment_reader
-
+from langchain.chains import create_history_aware_retriever
+from langchain_core.messages import AIMessage, HumanMessage
 
 environment = environment_reader(env_file='./.env')
 
@@ -237,29 +238,69 @@ class Rag:
 class RAGChatBot:
 
     llm = OpenAI()
-    prompt = hub.pull('langchain-ai/retrieval-qa-chat')
 
+    system_prompt = (
+        "You are an expert in massage therapy. I will ask you questions"
+        "how to do a specific massage. Provide me with a detailed answer"
+        "on how to perform that specific massage. Split your answer" 
+        "into paragraphs of 192 characters. Mark the end of each" 
+        "paragraph with two line brakes `\n\n`. It is very important to "
+        "split your answer into paragraphs. Do not put all sentences" 
+        "together, and always use `\n\n` to end the paragraph."
+        "Use the following information to answer the question." 
+        "If you don't know the answer, say that you don't know."
+        "{context}"
+    )
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}")
+    ])
+
+    context_system_prompt = (
+        "Given a chat history and the latest user question "
+        "which might reference context in the chat history, "
+        "formulate a standalone question which can be understood "
+        "without the chat history. Do NOT answer the question, "
+        "just reformulate it if needed and otherwise return it as is."
+    )
+
+    context_prompt = ChatPromptTemplate.from_messages([
+        ("system", context_system_prompt),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}")
+    ])
+     
     def __init__(self, vector_database) -> None:
         self.vector_database = vector_database
+        self.history = []
         self._documents_chain = None
         self._retrieval_chain = None
         self._raw_output = None
         self._response = None
+        self._history_aware_retriever = None
 
-    def _initialize_document_chain(self):
+    def _initialize_retriever(self):
+        self._history_aware_retriever = create_history_aware_retriever(
+            self.llm, self.vector_database.as_retriever(), self.context_prompt
+        )
+
+    def _initialize_documents_chain(self):
         self._documents_chain = create_stuff_documents_chain(
             llm=self.llm, prompt=self.prompt
         )
 
+
     def _initialize_retrieval_chain(self):
         self._retrieval_chain = create_retrieval_chain(
-            retriever=self.vector_database.as_retriever(), 
-            combine_docs_chain=self._documents_chain 
+            self._history_aware_retriever,
+            self._documents_chain
         )
     
     def _invoke_chain(self, user_input: str = None):
         self._raw_output = self._retrieval_chain.invoke(
-            {"input": user_input}
+            {"input": user_input, "chat_history": self.history}
         )
     
     def _extract_response(self):
@@ -268,16 +309,26 @@ class RAGChatBot:
 
         self._response = self._raw_output['answer']
 
-    def _start(self):
-        pass
-
     def start_chat(self):
-        user_input = input('What would you like to ask me?')
-        self._initialize_document_chain()
+        self._initialize_documents_chain()
+        self._initialize_retriever()
         self._initialize_retrieval_chain()
-        self._invoke_chain(user_input=user_input)
-        self._extract_response()
-        print(self._response)
+        print('>>> I am a massage therapy expert')
+        while True:
+            user_input = input(
+                '>>> Please ask me a question, or type Q to exit? '
+            )
+            if user_input.upper() != 'Q':
+                self._invoke_chain(user_input=user_input)
+                self._extract_response()
+                self.history.extend([
+                    HumanMessage(content=user_input),
+                    AIMessage(content=self._response) 
+                ])
+                print(self._response)
+            else:
+                print('>>> Thank you for approaching me. I wish you a nice day')
+                break
      
 
 
