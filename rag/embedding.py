@@ -2,8 +2,9 @@ import time
 from pathlib import Path
 from langchain_community.document_loaders import TextLoader, PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI, OpenAI
 from langchain_pinecone import PineconeVectorStore
+from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import PromptTemplate
 from langchain import hub
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -135,6 +136,46 @@ class OpenAIEmbedder(GenericEmbedder):
         self._initialize_vector_store()
         self._embed()
 
+class FAISSEmbedder(GenericEmbedder):
+
+    def __init__(self, 
+                 pieces_of_text: list[str], 
+                 local_database: str = None,
+                 database_name: str = None) -> None:
+        super().__init__(pieces_of_text)
+        self.local_database = local_database
+        self.database_name = database_name
+
+    def _initialize_embedder(self):
+
+        self._embedder = OpenAIEmbeddings(openai_api_key=self.OPENAI_API_KEY)
+    
+    def _create_vector_database(self):
+        self._vector_store = FAISS.from_documents(
+            self.pieces_of_texts,
+            self._embedder
+        )
+
+    def create_vector_database(self):
+
+        self._initialize_embedder()
+        self._create_vector_database()
+
+    def save_vector_database(self):
+        self._vector_store.save_local(
+            folder_path=self.local_database,
+            index_name=self.database_name
+        )
+
+    def get_vector_store(self):
+
+        return FAISS.load_local(
+            self.local_database, 
+            index_name=self.database_name, 
+            embeddings=self._embedder,
+            allow_dangerous_deserialization=True
+        )
+    
 
 class Rag:
 
@@ -191,6 +232,53 @@ class Rag:
         assert self._output is not None
 
         return self._output
+
+
+class RAGChatBot:
+
+    llm = OpenAI()
+    prompt = hub.pull('langchain-ai/retrieval-qa-chat')
+
+    def __init__(self, vector_database) -> None:
+        self.vector_database = vector_database
+        self._documents_chain = None
+        self._retrieval_chain = None
+        self._raw_output = None
+        self._response = None
+
+    def _initialize_document_chain(self):
+        self._documents_chain = create_stuff_documents_chain(
+            llm=self.llm, prompt=self.prompt
+        )
+
+    def _initialize_retrieval_chain(self):
+        self._retrieval_chain = create_retrieval_chain(
+            retriever=self.vector_database.as_retriever(), 
+            combine_docs_chain=self._documents_chain 
+        )
+    
+    def _invoke_chain(self, user_input: str = None):
+        self._raw_output = self._retrieval_chain.invoke(
+            {"input": user_input}
+        )
+    
+    def _extract_response(self):
+
+        assert self._raw_output is not None, 'No raw response.'
+
+        self._response = self._raw_output['answer']
+
+    def _start(self):
+        pass
+
+    def start_chat(self):
+        user_input = input('What would you like to ask me?')
+        self._initialize_document_chain()
+        self._initialize_retrieval_chain()
+        self._invoke_chain(user_input=user_input)
+        self._extract_response()
+        print(self._response)
+     
 
 
 
