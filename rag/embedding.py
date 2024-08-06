@@ -100,9 +100,7 @@ class OpenAIEmbedder(GenericEmbedder):
 
     def _initialize_embedder(self):
 
-        self._embedder = OpenAIEmbeddings(
-            openai_api_key=self.OPENAI_API_KEY
-        )
+        self._embedder = OpenAIEmbeddings(openai_api_key=self.OPENAI_API_KEY)
 
     def _initialize_vector_store(self):
 
@@ -147,8 +145,11 @@ class Rag:
     )
 
     query = """Provide me with a detailed insight on how to perform
-        sport massage of the deltoid muscle? Limit your answer to
-        768 characters.
+        sport massage of the gluteus maximus muscle. Split your answer 
+        into paragraphs of 192 characters. Mark the end of each 
+        paragraph with two line brakes `\n\n`. It is very important to 
+        split your answer into paragraphs. Do not put all sentences 
+        together, and always use `\n\n` to end the paragraph.
     """
 
     def __init__(self, augmented: bool = False) -> None:
@@ -174,12 +175,14 @@ class Rag:
     def invoke_chain(self):
 
         if self.augmented:
+            self._instantiate_augmented_chain()
             self._raw_output = self._augmented_chain.invoke(
                 input={"input": self.query}
             )
             self._output = self._raw_output['answer']
     
         else: 
+            self._instantiate_chain()
             self._raw_output = self._chain.invoke(input={})
             self._output = self._raw_output.content
     

@@ -22,7 +22,7 @@ from rag.embedding import GenericTextLoader, TextSplitter, \
 # query and get the resulst.
 # Let us now add the source document for augmentation.
 # %%
-SOUURCE_DOCUMENT = r'C:\Users\marko\Downloads\Sports And Remedial Massage Therapy ( PDFDrive ).pdf'
+SOURCE_DOCUMENT = r'C:\Users\marko\Downloads\Sports And Remedial Massage Therapy ( PDFDrive ).pdf'
 DOCUMENT_TYPE = 'pdf'
 # %% [md]
 # Let us read the PDF.
@@ -55,8 +55,8 @@ print(len(converted_document))
 # texts and vectors into vector database. This allows much smoother
 # augmentation of the data.
 # %%
-embedding = OpenAIEmbedder(pieces_of_text=converted_document)
-embedding.embed()
+# embedding = OpenAIEmbedder(pieces_of_text=converted_document)
+# embedding.embed()
 # %% [md]
 # Now let us instantiate the retrieval augmentation class. This class
 # is designed in such way that it can get unaugmented and augmented
@@ -69,6 +69,7 @@ rag.invoke_chain()
 output = rag.get_output()
 # %% [md]
 # And here is the output.
+# %%
 print(output)
 # %% [md]
 # Not bad at all.
@@ -81,3 +82,36 @@ augmented_output = rag.get_output()
 # And printing of the result.
 # %%
 print(augmented_output)
+# %% [md]
+# # Adding Images
+# %%
+image_descriptions = augmented_output.split(sep='\n\n')
+print(len(image_descriptions))
+start = """
+    Your job is to draw B&W images. Your drawing style is technical and 
+    precise. You are working on a instruction manual for sports massage. 
+    Take the following description and draw an image according to it.
+    Draw only the muscle that is mentioned in the description. Do not
+    draw the whole human body. Here is what you need to draw:
+"""
+from utilities.general import to_single_line
+from operations.operation import StabilityAiImage
+
+for index, description in enumerate(image_descriptions):
+    print(description)
+    if index == 0:
+        start_image_caller = StabilityAiImage(
+            prompt=to_single_line(start + description),
+            description=description            
+        )
+        start_image_caller.generate_image()
+        start_image_caller.display_image()
+    else:
+        image_caller = StabilityAiImage(
+            prompt=start + description,
+            description=description
+        )
+        image_caller.generate_image(image=start_image_caller._raw_image)
+        image_caller.display_image()
+
+`print('Finished')
