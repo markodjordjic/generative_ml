@@ -1,4 +1,3 @@
-import os
 import time
 from pathlib import Path
 from langchain import hub
@@ -191,8 +190,9 @@ class Rag:
         model='text-embedding-ada-002'
     )
     llm = ChatOpenAI(
-        openai_api_key=environment['OPENAI_API_KEY'],
-        model='GPT3.5-Turbo'
+        model='gpt-3.5-turbo', 
+        temperature=0, 
+        api_key=environment['OPENAI_API_KEY']
     )
     vector_store = PineconeVectorStore(
         pinecone_api_key=environment['PINECONE_API_KEY'],
@@ -251,8 +251,9 @@ class Rag:
 
 class RAGChatBot:
 
-    llm = OpenAI(
-        model='GPT-3.5-Turbo'
+    llm = ChatOpenAI(
+        model='gpt-3.5-turbo', 
+        temperature=0, 
         api_key=environment['OPENAI_API_KEY']
     )
 

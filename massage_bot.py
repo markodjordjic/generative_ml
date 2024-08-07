@@ -45,7 +45,6 @@
 # # Implementation
 # Let us start by import the necessary modules.
 # %%
-from utilities.general import environment_reader
 from rag.embedding import GenericTextLoader, TextSplitter, \
     FAISSEmbedder, RAGChatBot
 # %% [md]
