@@ -152,7 +152,10 @@ class FAISSEmbedder(GenericEmbedder):
 
     def _initialize_embedder(self):
 
-        self._embedder = OpenAIEmbeddings(openai_api_key=self.OPENAI_API_KEY)
+        self._embedder = OpenAIEmbeddings(
+            openai_api_key=self.OPENAI_API_KEY,
+            model='text-embedding-ada-002'
+        )
     
     def _create_vector_database(self):
         self._vector_store = FAISS.from_documents(
@@ -305,7 +308,6 @@ class RAGChatBot:
             llm=self.llm, prompt=self.prompt
         )
 
-
     def _initialize_retrieval_chain(self):
         self._retrieval_chain = create_retrieval_chain(
             self._history_aware_retriever,
@@ -343,4 +345,3 @@ class RAGChatBot:
             else:
                 print('>>> Thank you for approaching me. I wish you a nice day')
                 break
-            
