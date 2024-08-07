@@ -1,16 +1,20 @@
 import time
 from pathlib import Path
-from langchain_community.document_loaders import TextLoader, PyMuPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from langchain_pinecone import PineconeVectorStore
-from langchain_core.prompts import PromptTemplate
 from langchain import hub
-from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.retrieval import create_retrieval_chain
+from langchain.chains import create_history_aware_retriever
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI, OpenAI
+from langchain_pinecone import PineconeVectorStore
+from langchain_community.vectorstores import FAISS
+from langchain_community.document_loaders import TextLoader, \
+    PyMuPDFLoader
+from langchain_core.prompts import PromptTemplate, ChatPromptTemplate, \
+    MessagesPlaceholder
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_core.messages import AIMessage, HumanMessage
 from pinecone import Pinecone, ServerlessSpec  
 from utilities.general import environment_reader
-
 
 environment = environment_reader(env_file='./.env')
 
@@ -135,13 +139,65 @@ class OpenAIEmbedder(GenericEmbedder):
         self._initialize_vector_store()
         self._embed()
 
+class FAISSEmbedder(GenericEmbedder):
+
+    def __init__(self, 
+                 pieces_of_text: list[str], 
+                 local_database: str = None,
+                 database_name: str = None) -> None:
+        super().__init__(pieces_of_text)
+        self.local_database = local_database
+        self.database_name = database_name
+
+    def _initialize_embedder(self):
+
+        self._embedder = OpenAIEmbeddings(
+            openai_api_key=self.OPENAI_API_KEY,
+            model='text-embedding-ada-002'
+        )
+    
+    def _create_vector_database(self):
+        self._vector_store = FAISS.from_documents(
+            self.pieces_of_texts,
+            self._embedder
+        )
+
+    def create_vector_database(self):
+
+        self._initialize_embedder()
+        self._create_vector_database()
+
+    def save_vector_database(self):
+        self._vector_store.save_local(
+            folder_path=self.local_database,
+            index_name=self.database_name
+        )
+
+    def get_vector_store(self):
+
+        return FAISS.load_local(
+            self.local_database, 
+            index_name=self.database_name, 
+            embeddings=self._embedder,
+            allow_dangerous_deserialization=True
+        )
+    
 
 class Rag:
 
-    embeddings = OpenAIEmbeddings()
-    llm = ChatOpenAI()
+    embeddings = OpenAIEmbeddings(
+        openai_api_key=environment['OPENAI_API_KEY'],
+        model='text-embedding-ada-002'
+    )
+    llm = ChatOpenAI(
+        model='gpt-3.5-turbo', 
+        temperature=0, 
+        api_key=environment['OPENAI_API_KEY']
+    )
     vector_store = PineconeVectorStore(
-        index_name=environment["PINECONE_PROJECT_INDEX"], embedding=embeddings
+        pinecone_api_key=environment['PINECONE_API_KEY'],
+        index_name=environment["PINECONE_PROJECT_INDEX"], 
+        embedding=embeddings
     )
 
     query = """Provide me with a detailed insight on how to perform
@@ -193,7 +249,100 @@ class Rag:
         return self._output
 
 
+class RAGChatBot:
 
+    llm = ChatOpenAI(
+        model='gpt-3.5-turbo', 
+        temperature=0, 
+        api_key=environment['OPENAI_API_KEY']
+    )
 
+    system_prompt = """
+        You are an expert in massage therapy. I will ask you questions
+        how to do a specific massage. Provide me with a detailed answer
+        on how to perform that specific massage. Split your answer 
+        into paragraphs of 192 characters. Mark the end of each
+        paragraph with two line brakes `\n\n`. It is very important to
+        split your answer into paragraphs. Do not put all sentences 
+        together, and always use `\n\n` to end the paragraph.
+        Use the following information to answer the question. 
+        If you don't know the answer, say that you don't know.
+        {context}
+    """
 
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}")
+    ])
 
+    context_system_prompt = """
+        Given a chat history and the latest user question which might 
+        reference context in the chat history, formulate a standalone 
+        question which can be understood without the chat history. Do 
+        NOT answer the question, just reformulate it if needed and 
+        otherwise return it as is.
+    """
+
+    context_prompt = ChatPromptTemplate.from_messages([
+        ("system", context_system_prompt),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}")
+    ])
+     
+    def __init__(self, vector_database) -> None:
+        self.vector_database = vector_database
+        self.history = []
+        self._documents_chain = None
+        self._retrieval_chain = None
+        self._raw_output = None
+        self._response = None
+        self._history_aware_retriever = None
+
+    def _initialize_retriever(self):
+        self._history_aware_retriever = create_history_aware_retriever(
+            self.llm, self.vector_database.as_retriever(), self.context_prompt
+        )
+
+    def _initialize_documents_chain(self):
+        self._documents_chain = create_stuff_documents_chain(
+            llm=self.llm, prompt=self.prompt
+        )
+
+    def _initialize_retrieval_chain(self):
+        self._retrieval_chain = create_retrieval_chain(
+            self._history_aware_retriever,
+            self._documents_chain
+        )
+    
+    def _invoke_chain(self, user_input: str = None):
+        self._raw_output = self._retrieval_chain.invoke(
+            {"input": user_input, "chat_history": self.history}
+        )
+    
+    def _extract_response(self):
+
+        assert self._raw_output is not None, 'No raw response.'
+
+        self._response = self._raw_output['answer']
+
+    def start_chat(self):
+        self._initialize_documents_chain()
+        self._initialize_retriever()
+        self._initialize_retrieval_chain()
+        print('>>> I am a massage therapy expert')
+        while True:
+            user_input = input(
+                '>>> Please ask me a question, or type [Q] to exit. '
+            )
+            if user_input.upper() != 'Q':
+                self._invoke_chain(user_input=user_input)
+                self._extract_response()
+                self.history.extend([
+                    HumanMessage(content=user_input),
+                    AIMessage(content=self._response) 
+                ])
+                print(self._response)
+            else:
+                print('>>> Thank you for approaching me. I wish you a nice day')
+                break
