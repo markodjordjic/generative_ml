@@ -1,18 +1,21 @@
+import os
 import time
 from pathlib import Path
-from langchain_community.document_loaders import TextLoader, PyMuPDFLoader
+from langchain import hub
+from langchain.chains.retrieval import create_retrieval_chain
+from langchain.chains import create_history_aware_retriever
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI, OpenAI
 from langchain_pinecone import PineconeVectorStore
 from langchain_community.vectorstores import FAISS
-from langchain_core.prompts import PromptTemplate, ChatPromptTemplate, MessagesPlaceholder
-from langchain import hub
+from langchain_community.document_loaders import TextLoader, \
+    PyMuPDFLoader
+from langchain_core.prompts import PromptTemplate, ChatPromptTemplate, \
+    MessagesPlaceholder
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains.retrieval import create_retrieval_chain
+from langchain_core.messages import AIMessage, HumanMessage
 from pinecone import Pinecone, ServerlessSpec  
 from utilities.general import environment_reader
-from langchain.chains import create_history_aware_retriever
-from langchain_core.messages import AIMessage, HumanMessage
 
 environment = environment_reader(env_file='./.env')
 
@@ -180,10 +183,18 @@ class FAISSEmbedder(GenericEmbedder):
 
 class Rag:
 
-    embeddings = OpenAIEmbeddings()
-    llm = ChatOpenAI()
+    embeddings = OpenAIEmbeddings(
+        openai_api_key=environment['OPENAI_API_KEY'],
+        model='text-embedding-ada-002'
+    )
+    llm = ChatOpenAI(
+        openai_api_key=environment['OPENAI_API_KEY'],
+        model='GPT3.5-Turbo'
+    )
     vector_store = PineconeVectorStore(
-        index_name=environment["PINECONE_PROJECT_INDEX"], embedding=embeddings
+        pinecone_api_key=environment['PINECONE_API_KEY'],
+        index_name=environment["PINECONE_PROJECT_INDEX"], 
+        embedding=embeddings
     )
 
     query = """Provide me with a detailed insight on how to perform
@@ -237,20 +248,23 @@ class Rag:
 
 class RAGChatBot:
 
-    llm = OpenAI()
-
-    system_prompt = (
-        "You are an expert in massage therapy. I will ask you questions"
-        "how to do a specific massage. Provide me with a detailed answer"
-        "on how to perform that specific massage. Split your answer" 
-        "into paragraphs of 192 characters. Mark the end of each" 
-        "paragraph with two line brakes `\n\n`. It is very important to "
-        "split your answer into paragraphs. Do not put all sentences" 
-        "together, and always use `\n\n` to end the paragraph."
-        "Use the following information to answer the question." 
-        "If you don't know the answer, say that you don't know."
-        "{context}"
+    llm = OpenAI(
+        model='GPT-3.5-Turbo'
+        api_key=environment['OPENAI_API_KEY']
     )
+
+    system_prompt = """
+        You are an expert in massage therapy. I will ask you questions
+        how to do a specific massage. Provide me with a detailed answer
+        on how to perform that specific massage. Split your answer 
+        into paragraphs of 192 characters. Mark the end of each
+        paragraph with two line brakes `\n\n`. It is very important to
+        split your answer into paragraphs. Do not put all sentences 
+        together, and always use `\n\n` to end the paragraph.
+        Use the following information to answer the question. 
+        If you don't know the answer, say that you don't know.
+        {context}
+    """
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -258,13 +272,13 @@ class RAGChatBot:
         ("human", "{input}")
     ])
 
-    context_system_prompt = (
-        "Given a chat history and the latest user question "
-        "which might reference context in the chat history, "
-        "formulate a standalone question which can be understood "
-        "without the chat history. Do NOT answer the question, "
-        "just reformulate it if needed and otherwise return it as is."
-    )
+    context_system_prompt = """
+        Given a chat history and the latest user question which might 
+        reference context in the chat history, formulate a standalone 
+        question which can be understood without the chat history. Do 
+        NOT answer the question, just reformulate it if needed and 
+        otherwise return it as is.
+    """
 
     context_prompt = ChatPromptTemplate.from_messages([
         ("system", context_system_prompt),
@@ -316,7 +330,7 @@ class RAGChatBot:
         print('>>> I am a massage therapy expert')
         while True:
             user_input = input(
-                '>>> Please ask me a question, or type Q to exit? '
+                '>>> Please ask me a question, or type [Q] to exit. '
             )
             if user_input.upper() != 'Q':
                 self._invoke_chain(user_input=user_input)
@@ -329,10 +343,4 @@ class RAGChatBot:
             else:
                 print('>>> Thank you for approaching me. I wish you a nice day')
                 break
-     
-
-
-
-
-
-
+            
